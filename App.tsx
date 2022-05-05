@@ -1,31 +1,46 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as MediaLibrary from 'expo-media-library';
 
-class App extends React.Component {
-  fetchMedia = async () => {
-    let { status } = await MediaLibrary.requestPermissionsAsync();
-    let cursor = await MediaLibrary.getAssetsAsync({
-      mediaType: ['photo', 'video'],
-    });
-    let image = await MediaLibrary.getAssetInfoAsync(cursor.assets[0]);
-    return image.location;
-  };
+const App = () => {
+  const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
 
-  componentDidMount = async () => {
-    await this.fetchMedia();
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-  }
+  const fetchMedia = useCallback(async () => {
+    let markersArray : MediaLibrary.Location[] = []
+      let { status } = await MediaLibrary.requestPermissionsAsync();
+      let cursor = await MediaLibrary.getAssetsAsync({
+        mediaType: ['photo', 'video'],
+      });
+      let image = await MediaLibrary.getAssetInfoAsync(cursor.assets[0]);
+      if (image.location) {
+       markersArray.push(image.location);
+      }
+      setMarkers(markersArray);
+  }, []);
 
-  render = () => {
-    return (
-      <View style={styles.container}>
-        <MapView style={styles.map} />
-      </View>
-    );
-  };
+  useEffect( () => {
+    fetchMedia();
+  }, [])
+
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+  }, [])
+
+  return (
+    <View style={styles.container}>
+      <MapView style={styles.map}>
+        {markers.map((item) => (
+          <Marker key={Math.random()}
+            coordinate={{
+              latitude: item.latitude,
+              longitude: item.longitude,
+            }}></Marker>
+        ))}
+      </MapView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
