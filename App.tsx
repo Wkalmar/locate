@@ -16,7 +16,6 @@ const App = () => {
       }
       let markersSet : Set<MediaLibrary.Location> = new Set();
       while (hasMoreData) {
-
         let cursor = await MediaLibrary.getAssetsAsync(request);
         const markersArray = await Promise.all(cursor.assets.map(async element => {
           let image = await MediaLibrary.getAssetInfoAsync(element);
@@ -45,11 +44,14 @@ const App = () => {
     <View style={styles.container}>
       <MapView style={styles.map}>
         {markers.map((item) => (
-          <Marker key={Math.random()}
+          <Marker
+            key={Math.random()}
             coordinate={{
               latitude: item.latitude,
               longitude: item.longitude,
-            }}></Marker>
+            }}
+            icon={require('./assets/marker.png')}>
+          </Marker>
         ))}
       </MapView>
     </View>
