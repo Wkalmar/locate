@@ -7,17 +7,30 @@ import * as MediaLibrary from 'expo-media-library';
 const App = () => {
   const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
 
-  const fetchMedia = useCallback(async () => {
-    let markersArray : MediaLibrary.Location[] = []
+  const fetchMedia = useCallback(() => {
+    const fetch = async () => {
       let { status } = await MediaLibrary.requestPermissionsAsync();
-      let cursor = await MediaLibrary.getAssetsAsync({
+      let hasMoreData = true;
+      let request : MediaLibrary.AssetsOptions = {
         mediaType: ['photo', 'video'],
-      });
-      let image = await MediaLibrary.getAssetInfoAsync(cursor.assets[0]);
-      if (image.location) {
-       markersArray.push(image.location);
       }
-      setMarkers(markersArray);
+      let markersSet : Set<MediaLibrary.Location> = new Set();
+      while (hasMoreData) {
+
+        let cursor = await MediaLibrary.getAssetsAsync(request);
+        const markersArray = await Promise.all(cursor.assets.map(async element => {
+          let image = await MediaLibrary.getAssetInfoAsync(element);
+          return image.location;
+        }));
+        let nonNullLocations = markersArray.filter(p => p != undefined) as MediaLibrary.Location[];
+        nonNullLocations.forEach(markersSet.add, markersSet);
+        hasMoreData = cursor.hasNextPage;
+        request.after = cursor.endCursor
+      }
+      setMarkers([...markersSet]);
+    }
+    fetch().catch(console.error);
+
   }, []);
 
   useEffect( () => {
