@@ -7,6 +7,8 @@ import * as MediaLibrary from 'expo-media-library';
 const App = () => {
   const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
 
+  let map = useRef<MapView>(null);
+
   const fetchMedia = useCallback(() => {
     const fetch = async () => {
       let { status } = await MediaLibrary.requestPermissionsAsync();
@@ -26,10 +28,14 @@ const App = () => {
         hasMoreData = cursor.hasNextPage;
         request.after = cursor.endCursor
       }
-      setMarkers([...markersSet]);
+      const markersArray = [...markersSet]
+      map.current?.fitToCoordinates(markersArray, {
+        edgePadding: DEFAULT_PADDING,
+        animated: true,
+      })
+      setMarkers(markersArray);
     }
     fetch().catch(console.error);
-
   }, []);
 
   useEffect( () => {
@@ -42,7 +48,8 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map}>
+      <MapView ref={map}
+        style={styles.map}>
         {markers.map((item) => (
           <Marker
             key={Math.random()}
@@ -70,5 +77,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
+
+const DEFAULT_PADDING = {top:50, bottom:50, left:50, right:50};
 
 export default App;
