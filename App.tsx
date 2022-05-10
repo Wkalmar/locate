@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Callout, Marker } from 'react-native-maps';
 import * as MediaLibrary from 'expo-media-library';
+import ViewShot, {captureRef} from "react-native-view-shot";
+import * as Sharing from "expo-sharing";
 
 const App = () => {
   const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
@@ -38,6 +40,14 @@ const App = () => {
     fetch().catch(console.error);
   }, []);
 
+  const captureAndShareScreenshot = async () => {
+    const uri = await captureRef(map, {
+        format: "png",
+        quality: 1
+    })
+    await Sharing.shareAsync("file://" + uri);
+  };
+
   useEffect( () => {
     fetchMedia();
   }, [])
@@ -61,23 +71,38 @@ const App = () => {
           </Marker>
         ))}
       </MapView>
+      <Callout style={styles.button}>
+        <TouchableOpacity onPress={captureAndShareScreenshot}>
+            <Text>share</Text>
+        </TouchableOpacity>
+      </Callout>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1
   },
   map: {
+    flex: 1,
     width: '100%',
-    height: '100%',
+    height: '100%'
   },
+  button: {
+    flex: 1,
+    flexDirection:'row',
+    position:'absolute',
+    bottom:10,
+    right:50,
+    alignSelf: "center",
+    justifyContent: "space-between",
+    backgroundColor: "transparent",
+    borderWidth: 0.5,
+    borderRadius: 20
+  }
 });
 
-const DEFAULT_PADDING = {top:50, bottom:50, left:50, right:50};
+const DEFAULT_PADDING = {top:100, bottom:100, left:100, right:100};
 
 export default App;

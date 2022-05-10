@@ -19,7 +19,9 @@
     "react-native-web": "0.17.1",
     "expo-screen-orientation": "~4.1.1",
     "react-native-maps": "0.29.4",
-    "expo-media-library": "~14.0.0"
+    "expo-media-library": "~14.0.0",
+    "react-native-view-shot": "3.1.2",
+    "expo-sharing": "~10.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
