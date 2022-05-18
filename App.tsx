@@ -5,6 +5,7 @@ import MapView, { Callout, Marker } from 'react-native-maps';
 import * as MediaLibrary from 'expo-media-library';
 import ViewShot, {captureRef} from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+import { FAB, Menu, TextInput } from 'react-native-paper';
 
 const App = () => {
   const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
@@ -71,11 +72,13 @@ const App = () => {
           </Marker>
         ))}
       </MapView>
-      <Callout style={styles.button}>
-        <TouchableOpacity onPress={captureAndShareScreenshot}>
-            <Text>share</Text>
-        </TouchableOpacity>
-      </Callout>
+      <FAB
+          icon="share"
+          accessibilityLabel='share'
+          style={styles.fab}
+          onPress={captureAndShareScreenshot}
+          visible={true}
+        />
     </View>
   );
 }
@@ -90,17 +93,19 @@ const styles = StyleSheet.create({
     height: '100%'
   },
   button: {
+    backgroundColor: "transparent",
+    borderWidth: 0.5,
+    borderRadius: 20
+  },
+  fab: {
     flex: 1,
     flexDirection:'row',
     position:'absolute',
     bottom:10,
-    right:50,
+    right:20,
     alignSelf: "center",
-    justifyContent: "space-between",
-    backgroundColor: "transparent",
-    borderWidth: 0.5,
-    borderRadius: 20
-  }
+    justifyContent: "space-between"
+  },
 });
 
 const DEFAULT_PADDING = {top:100, bottom:100, left:100, right:100};
