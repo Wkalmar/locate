@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import MapView, { Callout, Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as MediaLibrary from 'expo-media-library';
-import ViewShot, {captureRef} from "react-native-view-shot";
+import {captureRef} from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
-import { FAB, Menu, TextInput } from 'react-native-paper';
+import { DefaultTheme, FAB } from 'react-native-paper';
 
 const App = () => {
   const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
@@ -78,6 +78,8 @@ const App = () => {
           style={styles.fab}
           onPress={captureAndShareScreenshot}
           visible={true}
+          theme={CustomTheme}
+          color='#E81E25'
         />
     </View>
   );
@@ -92,11 +94,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%'
   },
-  button: {
-    backgroundColor: "transparent",
-    borderWidth: 0.5,
-    borderRadius: 20
-  },
   fab: {
     flex: 1,
     flexDirection:'row',
@@ -109,5 +106,13 @@ const styles = StyleSheet.create({
 });
 
 const DEFAULT_PADDING = {top:100, bottom:100, left:100, right:100};
+
+const CustomTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    accent: '#FFD874'
+  }
+};
 
 export default App;
