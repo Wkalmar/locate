@@ -4,31 +4,17 @@ import { useCallback, useState } from "react";
 
 import AnimatedSplashScreen from "./AnimatedSplashScreen";
 
-
-const AnimatedAppLoader = ({ children, image}: ComponentProps) => {
+const AnimatedAppLoader = () => {
     const [isSplashReady, setSplashReady] = useState(false);
-
     const startAsync = useCallback(
       // If you use a local image with require(...), use `Asset.fromModule`
-      () => new Promise<void>((resolve, reject) => Asset.fromURI(image).downloadAsync()),
-      [image]
+      () => new Promise<void>((resolve, reject) => Asset.fromModule(require(`../assets/splash.png`)).downloadAsync()),
+      []
     );
 
     const onFinish = useCallback(() => setSplashReady(true), []);
 
-    if (!isSplashReady) {
-      return (
-        <AppLoading
-          // Instruct SplashScreen not to hide yet, we want to do this manually
-          autoHideSplash={false}
-          startAsync={startAsync}
-          onError={console.error}
-          onFinish={onFinish}
-        />
-      );
-    }
-
-    return <AnimatedSplashScreen image={image}>{children}</AnimatedSplashScreen>;
+    return <AnimatedSplashScreen/>;
   }
 
   export default AnimatedAppLoader;
