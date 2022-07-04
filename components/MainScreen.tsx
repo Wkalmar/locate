@@ -9,17 +9,11 @@ import { DefaultTheme, FAB } from 'react-native-paper';
 const MainScreen = ({markers}: MainScreenProps) => {
     let map = useRef<MapView>(null);
 
-    useEffect(() => {
-      async function prepare() {
-          console.log("drawing markers")
-          console.log(markers)
-          map.current?.fitToCoordinates(markers, {
-            edgePadding: DEFAULT_PADDING,
-            animated: true,
-          });
-      }
-      prepare();
-    }, []);
+    const fitAllMarkers = () => {
+      map.current?.fitToCoordinates(markers, {
+        edgePadding: DEFAULT_PADDING,
+        animated: true,
+    })};
 
     const captureAndShareScreenshot = async () => {
       const uri = await captureRef(map, {
@@ -36,7 +30,8 @@ const MainScreen = ({markers}: MainScreenProps) => {
     return (
       <View style={styles.container}>
         <MapView ref={map}
-          style={styles.map}>
+          style={styles.map}
+          onMapLoaded={fitAllMarkers}>
           {markers.map((item) => (
             <Marker
               key={Math.random()}

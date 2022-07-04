@@ -47,8 +47,6 @@ const AnimatedSplashScreen = () => {
         markersArray = [...markersSet]
         setMarkers(markersArray);
         await SplashScreen.hideAsync();
-        // Load stuff
-        await Promise.all([]);
       } catch (e) {
         console.log(e)
         // handle errors

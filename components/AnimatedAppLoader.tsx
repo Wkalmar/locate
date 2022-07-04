@@ -1,4 +1,3 @@
-import AppLoading from "expo-app-loading";
 import { Asset } from "expo-asset";
 import { useCallback, useState } from "react";
 
