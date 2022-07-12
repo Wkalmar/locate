@@ -7,30 +7,34 @@ import MainScreen from './MainScreen';
 
 const AnimatedSplashScreen = () => {
     const animation = useMemo(() => new Animated.Value(1), []);
+    const textAnimation = useMemo(() => new Animated.Value(0), []);
     const [isAppReady, setAppReady] = useState(false);
-    const [isSplashAnimationComplete, setAnimationComplete] = useState(false);
+    const [isTextAnimationReady, setTextAnimationReady] = useState(false);
     const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
 
     useEffect(() => {
-      if (isAppReady) {
-        Animated.timing(animation, {
-          toValue: 0,
-          duration: 200,
+      if (!isAppReady) {
+        console.log("inside text animation")
+        Animated.timing(textAnimation, {
+          toValue: 1,
+          duration: 1,
           useNativeDriver: true,
-        }).start(() => setAnimationComplete(true));
+        }).start(() => {
+          console.log('text ready')
+          setTextAnimationReady(true)
+        });
       }
     }, [isAppReady]);
-
-
 
     const onImageLoaded = useCallback(async () => {
       let markersArray : MediaLibrary.Location[] = [];
       try {
+        console.log('loading markers')
         let { status } = await MediaLibrary.requestPermissionsAsync();
 
         let hasMoreData = true;
         let request : MediaLibrary.AssetsOptions = {
-          mediaType: ['photo', 'video'],
+          mediaType: ['photo', 'video']
         }
         let markersSet : Set<MediaLibrary.Location> = new Set();
         while (hasMoreData) {
@@ -58,7 +62,7 @@ const AnimatedSplashScreen = () => {
     return (
       <View style={{ flex: 1 }}>
         {isAppReady && (<MainScreen markers={markers}/>)}
-        {!isSplashAnimationComplete && (<Animated.View
+        {!isAppReady && (<Animated.View
           pointerEvents="none"
           style={[
             //StyleSheet.absoluteFill,
@@ -67,6 +71,9 @@ const AnimatedSplashScreen = () => {
               opacity: animation,
             },
           ]}>
+          {isTextAnimationReady && (<Animated.Text>
+            Hold on. We're doing some magic just for you
+          </Animated.Text>)}
           <Animated.Image
             style={{
               width: "100%",
