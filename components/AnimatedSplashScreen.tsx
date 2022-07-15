@@ -9,6 +9,7 @@ const AnimatedSplashScreen = () => {
     const textAnimation = useMemo(() => new Animated.Value(0), []);
     const [isAppReady, setAppReady] = useState(false);
     const [isTextAnimationIsReady, setTextAnimationIsReady] = useState(false);
+    const [loadingText, setLoadingText] = useState("");
     const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
 
     useEffect(() => {
@@ -55,8 +56,18 @@ const AnimatedSplashScreen = () => {
 
           let now = Date.now();
           let delta = now - timeStart;
-          if (delta > 2000 && !isTextAnimationIsReady) {
-            setTextAnimationIsReady(true);
+          if (delta > 14000) {
+            setLoadingText("It takes a while this time, but trust us it's worth it...")
+          } else if (delta > 9000) {
+            setLoadingText("Almost finished...")
+          } else if (delta > 5000) {
+            setLoadingText("Working on it...")
+          } else if (delta > 2000) {
+            if (!isTextAnimationIsReady) {
+              setTextAnimationIsReady(true);
+
+            }
+            setLoadingText("Hold on! We're doing some magic just for you...")
           }
         }
         markersArray = [...markersSet]
@@ -88,7 +99,7 @@ const AnimatedSplashScreen = () => {
             bottom: 20,
             alignSelf:"center"
           }}>
-            Hold on! We're doing some magic just for you...
+            {loadingText}
           </Animated.Text>
           <Animated.Image
             style={{
