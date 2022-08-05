@@ -25,11 +25,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/splash.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#FFD874"
       },
       "config": {
-        "googleMobileAdsAppId": "ca-app-pub-xxx"
+        "googleMobileAdsAppId": "",
+        "googleMaps": {
+          "apiKey":""
+        }
       },
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
