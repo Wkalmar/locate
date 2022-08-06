@@ -42,10 +42,9 @@ const AnimatedSplashScreen = () => {
       let markersArray : MediaLibrary.Location[] = [];
       let hasMoreData = true;
       try {
-        var timeStart = Date.now();
         let { status } = await MediaLibrary.requestPermissionsAsync();
         await SplashScreen.hideAsync();
-
+        let timeStart = Date.now();
         let markersSet : Set<MediaLibrary.Location> = new Set();
         while (hasMoreData) {
           let cursor = await MediaLibrary.getAssetsAsync(medialibraryRequest);
@@ -56,7 +55,9 @@ const AnimatedSplashScreen = () => {
 
           let now = Date.now();
           let delta = now - timeStart;
-          if (delta > 14000) {
+          if (delta > 20000) {
+            setLoadingText(`We've processed ${markersSet.values.length} items. There's more work though...`)
+          } else if (delta > 14000) {
             setLoadingText("It takes a while this time, but trust us it's worth it...")
           } else if (delta > 9000) {
             setLoadingText("Almost finished...")
@@ -65,7 +66,6 @@ const AnimatedSplashScreen = () => {
           } else if (delta > 2000) {
             if (!isTextAnimationIsReady) {
               setTextAnimationIsReady(true);
-
             }
             setLoadingText("Hold on! We're doing some magic just for you...")
           }
