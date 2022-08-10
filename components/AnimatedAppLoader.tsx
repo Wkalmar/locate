@@ -1,19 +1,34 @@
-import { Asset } from "expo-asset";
-import { useCallback, useState } from "react";
-
+import NetInfo from '@react-native-community/netinfo';
 import AnimatedSplashScreen from "./AnimatedSplashScreen";
+import { useEffect,useState } from 'react';
+import { View } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
+import OfflineScreen from './OfflineScreen';
+
 
 const AnimatedAppLoader = () => {
-    const [isSplashReady, setSplashReady] = useState(false);
-    const startAsync = useCallback(
-      // If you use a local image with require(...), use `Asset.fromModule`
-      () => new Promise<void>((resolve, reject) => Asset.fromModule(require(`../assets/splash.png`)).downloadAsync()),
-      []
-    );
+  const [isConnected, setConnected] = useState(false)
+  const [isConnectionProbeFinished, setConnectionProbeFinished] = useState(false)
 
-    const onFinish = useCallback(() => setSplashReady(true), []);
+  useEffect(() => {
+    const fetchConnection = async () => {
+      const connectionStaus = await NetInfo.fetch();
+      setConnected(connectionStaus.isConnected === true)
+      if (!connectionStaus.isConnected) {
+        await SplashScreen.hideAsync();
+      }
+      setConnectionProbeFinished(true)
+    }
 
-    return <AnimatedSplashScreen/>;
+    fetchConnection()
+  }, [])
+
+  return (
+      <View style={{ flex: 1 }}>
+      {isConnected && isConnectionProbeFinished && <AnimatedSplashScreen/>}
+      {!isConnected && isConnectionProbeFinished && <OfflineScreen/>}
+      </View>
+    )
   }
 
   export default AnimatedAppLoader;
