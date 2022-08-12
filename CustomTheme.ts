@@ -4,7 +4,7 @@ const CustomTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      accent: '#FFD874'
+      primaryContainer: '#FFD874'
     }
   };
 
