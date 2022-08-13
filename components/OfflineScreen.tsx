@@ -2,7 +2,7 @@ import { View, StyleSheet } from "react-native";
 import { Button, Text } from 'react-native-paper';
 import CustomTheme from "../CustomTheme";
 
-const OfflineScreen = () => {
+const OfflineScreen = ({refresh}: any) => {
     return (
         <View style={styles.container}>
             <Text style={styles.text}>
@@ -15,7 +15,8 @@ const OfflineScreen = () => {
                 buttonColor="#E81E25"
                 textColor="#FFF"
                 theme={CustomTheme}
-                style={styles.button}>
+                style={styles.button}
+                onPress={() => refresh()}>
                     Refresh
             </Button>
         </View>
