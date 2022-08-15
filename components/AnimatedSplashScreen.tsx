@@ -38,7 +38,7 @@ const AnimatedSplashScreen = () => {
         nonNullLocations.forEach(markersSet.add, markersSet);
     }
 
-    const onImageLoaded = useCallback(async () => {
+    const loadLocations = async () => {
       let markersArray : MediaLibrary.Location[] = [];
       let hasMoreData = true;
       try {
@@ -77,6 +77,10 @@ const AnimatedSplashScreen = () => {
       } finally {
         setAppReady(!hasMoreData);
       }
+    }
+
+    const onImageLoaded = useCallback(async () => {
+      await loadLocations();
     }, []);
 
     return (
@@ -94,7 +98,6 @@ const AnimatedSplashScreen = () => {
             opacity: textAnimation,
             color: '#E81E25',
             fontWeight: "700",
-            fontStyle: "italic",
             position: "absolute",
             bottom: 20,
             alignSelf:"center"

@@ -4,8 +4,9 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import MapView, { Marker } from 'react-native-maps';
 import {captureRef} from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
-import { DefaultTheme, FAB } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { AdMobBanner } from 'expo-ads-admob';
+import CustomTheme from '../CustomTheme';
 
 const MainScreen = ({markers}: MainScreenProps) => {
     let map = useRef<MapView>(null);
@@ -90,13 +91,5 @@ const MainScreen = ({markers}: MainScreenProps) => {
   });
 
   const DEFAULT_PADDING = {top:100, bottom:100, left:100, right:100};
-
-  const CustomTheme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      accent: '#FFD874'
-    }
-  };
 
   export default MainScreen;
