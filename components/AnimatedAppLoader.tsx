@@ -13,7 +13,7 @@ const AnimatedAppLoader = () => {
   const fetchConnection = async () => {
     const connectionStaus = await NetInfo.fetch();
     setConnected(connectionStaus.isConnected === true)
-    if (connectionStaus.isConnected) {
+    if (!connectionStaus.isConnected) {
       await SplashScreen.hideAsync();
     }
     setConnectionProbeFinished(true)
