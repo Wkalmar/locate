@@ -2,7 +2,7 @@
   "expo": {
     "name": "Locate!",
     "slug": "Locate",
-    "version": "0.1.0",
+    "version": "0.5.0",
     "orientation": "landscape",
     "icon": "./assets/splash.png",
     "splash": {
@@ -39,7 +39,8 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.ACCESS_MEDIA_LOCATION"
       ],
-      "package": "com.wkalmar.Locate"
+      "package": "com.wkalmar.Locate",
+      "versionCode":5
     },
     "web": {
       "favicon": "./assets/favicon.png"

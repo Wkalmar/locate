@@ -28,10 +28,6 @@ const MainScreen = ({markers}: MainScreenProps) => {
     };
 
     useEffect(() => {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT);
-    }, [])
-
-    useEffect(() => {
       setTimeout(()=>{
         setAdReady(true);
       }, 5000);
@@ -65,6 +61,7 @@ const MainScreen = ({markers}: MainScreenProps) => {
             visible={true}
             theme={CustomTheme}
             color='#E81E25'
+            label='Share'
           />
       </View>
     );
@@ -90,6 +87,6 @@ const MainScreen = ({markers}: MainScreenProps) => {
     }
   });
 
-  const DEFAULT_PADDING = {top:100, bottom:100, left:100, right:100};
+  const DEFAULT_PADDING = {top:111, bottom:111, left:111, right:111};
 
   export default MainScreen;
