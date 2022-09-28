@@ -55,12 +55,8 @@ const AnimatedSplashScreen = () => {
 
           let now = Date.now();
           let delta = now - timeStart;
-          if (delta > 20000) {
-            setLoadingText(`We've processed ${markersSet.values.length} items. There's more work though...`)
-          } else if (delta > 14000) {
-            setLoadingText("It takes a while this time, but trust us it's worth it...")
-          } else if (delta > 9000) {
-            setLoadingText("Almost finished...")
+          if (delta > 9000) {
+            setLoadingText(`We've processed ${markersSet.size} items. There's more work though...`)
           } else if (delta > 5000) {
             setLoadingText("Working on it...")
           } else if (delta > 2000) {
