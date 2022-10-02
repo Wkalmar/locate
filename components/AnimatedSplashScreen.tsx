@@ -4,6 +4,7 @@ import { Animated, Easing, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import * as MediaLibrary from 'expo-media-library';
 import MainScreen from './MainScreen';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AnimatedSplashScreen = () => {
     const textAnimation = useMemo(() => new Animated.Value(0), []);
@@ -32,8 +33,14 @@ const AnimatedSplashScreen = () => {
       markersSet : Set<MediaLibrary.Location>) => {
         const markersArray = await Promise.all(cursor.assets.map(async element => {
           let image = await MediaLibrary.getAssetInfoAsync(element);
+          if (image.location != null) {
+            await AsyncStorage.setItem(element.id, JSON.stringify(image.location))
+          }
           return image.location;
         }));
+        if (markersArray.length === 0) {
+          return;
+        }
         let nonNullLocations = markersArray.filter(p => p != undefined) as MediaLibrary.Location[];
         nonNullLocations.forEach(markersSet.add, markersSet);
     }
@@ -46,12 +53,23 @@ const AnimatedSplashScreen = () => {
         await SplashScreen.hideAsync();
         let timeStart = Date.now();
         let markersSet : Set<MediaLibrary.Location> = new Set();
+
+        const cachedMarkers = await AsyncStorage.getItem("markers");
+        const lastItemIdCache = await AsyncStorage.getItem("lastItemId");
+        if (cachedMarkers != null && lastItemIdCache != null && lastItemIdCache !== "") {
+          let parsedMarkers = JSON.parse(cachedMarkers) as MediaLibrary.Location[];
+          if (parsedMarkers != null && parsedMarkers.length !== 0) {
+            parsedMarkers.forEach(markersSet.add, markersSet);
+            medialibraryRequest.after = lastItemIdCache;
+          }
+        }
+        let lastId = "";
         while (hasMoreData) {
           let cursor = await MediaLibrary.getAssetsAsync(medialibraryRequest);
           await populateLocationsIntoSet(cursor, markersSet);
-
           hasMoreData = cursor.hasNextPage;
           medialibraryRequest.after = cursor.endCursor
+          lastId = cursor.endCursor;
 
           let now = Date.now();
           let delta = now - timeStart;
@@ -68,6 +86,8 @@ const AnimatedSplashScreen = () => {
         }
         markersArray = [...markersSet]
         setMarkers(markersArray);
+        await AsyncStorage.setItem("lastItemId", lastId);
+        await AsyncStorage.setItem("markers", JSON.stringify(markersArray))
       } catch (e) {
         console.log(e)
       } finally {
@@ -85,7 +105,6 @@ const AnimatedSplashScreen = () => {
         {!isAppReady && (<Animated.View
           pointerEvents="none"
           style={[
-            //StyleSheet.absoluteFill,
             {
               backgroundColor: Constants.manifest?.splash?.backgroundColor
             },
