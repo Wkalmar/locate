@@ -6,6 +6,9 @@ import * as MediaLibrary from 'expo-media-library';
 import MainScreen from './MainScreen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const cachedMarkersKey : string = "markers";
+const cachedLastItemIdKey : string = "lastItemId";
+
 const AnimatedSplashScreen = () => {
     const textAnimation = useMemo(() => new Animated.Value(0), []);
     const [isAppReady, setAppReady] = useState(false);
@@ -54,15 +57,7 @@ const AnimatedSplashScreen = () => {
         let timeStart = Date.now();
         let markersSet : Set<MediaLibrary.Location> = new Set();
 
-        const cachedMarkers = await AsyncStorage.getItem("markers");
-        const lastItemIdCache = await AsyncStorage.getItem("lastItemId");
-        if (cachedMarkers != null && lastItemIdCache != null && lastItemIdCache !== "") {
-          let parsedMarkers = JSON.parse(cachedMarkers) as MediaLibrary.Location[];
-          if (parsedMarkers != null && parsedMarkers.length !== 0) {
-            parsedMarkers.forEach(markersSet.add, markersSet);
-            medialibraryRequest.after = lastItemIdCache;
-          }
-        }
+        await tryGetLocationsFromCache(markersSet);
         let lastId = "";
         while (hasMoreData) {
           let cursor = await MediaLibrary.getAssetsAsync(medialibraryRequest);
@@ -86,12 +81,28 @@ const AnimatedSplashScreen = () => {
         }
         markersArray = [...markersSet]
         setMarkers(markersArray);
-        await AsyncStorage.setItem("lastItemId", lastId);
-        await AsyncStorage.setItem("markers", JSON.stringify(markersArray))
+        await setLocationsToCache(lastId);
       } catch (e) {
         console.log(e)
       } finally {
         setAppReady(!hasMoreData);
+      }
+
+      async function setLocationsToCache(lastId: string) {
+        await AsyncStorage.setItem(cachedLastItemIdKey, lastId);
+        await AsyncStorage.setItem(cachedMarkersKey, JSON.stringify(markersArray));
+      }
+
+      async function tryGetLocationsFromCache(markersSet: Set<MediaLibrary.Location>) {
+        const cachedMarkers = await AsyncStorage.getItem(cachedMarkersKey);
+        const lastItemIdCache = await AsyncStorage.getItem(cachedLastItemIdKey);
+        if (cachedMarkers != null && lastItemIdCache != null && lastItemIdCache !== "") {
+          let parsedMarkers = JSON.parse(cachedMarkers) as MediaLibrary.Location[];
+          if (parsedMarkers != null && parsedMarkers.length !== 0) {
+            parsedMarkers.forEach(markersSet.add, markersSet);
+            medialibraryRequest.after = lastItemIdCache;
+          }
+        }
       }
     }
 
