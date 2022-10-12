@@ -5,6 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import * as MediaLibrary from 'expo-media-library';
 import MainScreen from './MainScreen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import EmptyMarkersScreen from './EmptyMarkersScreen';
 
 const cachedMarkersKey : string = "markers";
 const cachedLastItemIdKey : string = "lastItemId";
@@ -12,6 +13,7 @@ const cachedLastItemIdKey : string = "lastItemId";
 const AnimatedSplashScreen = () => {
     const textAnimation = useMemo(() => new Animated.Value(0), []);
     const [isAppReady, setAppReady] = useState(false);
+    const [isMarkersSetEmpty, setMarkersSetEmpty] = useState(true);
     const [isTextAnimationIsReady, setTextAnimationIsReady] = useState(false);
     const [loadingText, setLoadingText] = useState("");
     const [markers, setMarkers] = useState<MediaLibrary.Location[]>([])
@@ -58,14 +60,12 @@ const AnimatedSplashScreen = () => {
         let markersSet : Set<MediaLibrary.Location> = new Set();
 
         await tryGetLocationsFromCache(markersSet);
-        let lastId = "";
         while (hasMoreData) {
           let cursor = await MediaLibrary.getAssetsAsync(medialibraryRequest);
           await populateLocationsIntoSet(cursor, markersSet);
           hasMoreData = cursor.hasNextPage;
           medialibraryRequest.after = cursor.endCursor
           lastId = cursor.endCursor;
-
           let now = Date.now();
           let delta = now - timeStart;
           if (delta > 9000) {
@@ -81,6 +81,7 @@ const AnimatedSplashScreen = () => {
         }
         markersArray = [...markersSet]
         setMarkers(markersArray);
+        setMarkersSetEmpty(markersArray.length === 0);
         await setLocationsToCache(lastId);
       } catch (e) {
         console.log(e)
@@ -112,7 +113,8 @@ const AnimatedSplashScreen = () => {
 
     return (
       <View style={{ flex: 1 }}>
-        {isAppReady && (<MainScreen markers={markers}/>)}
+        {isAppReady && isMarkersSetEmpty && (<EmptyMarkersScreen/>)}
+        {isAppReady && !isMarkersSetEmpty && (<MainScreen markers={markers}/>)}
         {!isAppReady && (<Animated.View
           pointerEvents="none"
           style={[
