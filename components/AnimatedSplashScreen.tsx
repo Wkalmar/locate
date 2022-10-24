@@ -60,6 +60,9 @@ const AnimatedSplashScreen = () => {
         let markersSet : Set<MediaLibrary.Location> = new Set();
 
         await tryGetLocationsFromCache(markersSet);
+        const albums = await MediaLibrary.getAlbumsAsync();
+        const cameraAlbum = albums.find(p => p.title === "Camera");
+        medialibraryRequest.album = cameraAlbum;
         while (hasMoreData) {
           let cursor = await MediaLibrary.getAssetsAsync(medialibraryRequest);
           await populateLocationsIntoSet(cursor, markersSet);
