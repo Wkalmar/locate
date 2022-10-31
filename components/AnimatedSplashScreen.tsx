@@ -7,9 +7,6 @@ import MainScreen from './MainScreen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import EmptyMarkersScreen from './EmptyMarkersScreen';
 
-const cachedMarkersKey : string = "markers";
-const cachedLastItemIdKey : string = "lastItemId";
-
 const AnimatedSplashScreen = () => {
     const textAnimation = useMemo(() => new Animated.Value(0), []);
     const [isAppReady, setAppReady] = useState(false);
@@ -37,6 +34,10 @@ const AnimatedSplashScreen = () => {
       cursor : MediaLibrary.PagedInfo<MediaLibrary.Asset>,
       markersSet : Set<MediaLibrary.Location>) => {
         const markersArray = await Promise.all(cursor.assets.map(async element => {
+          let cachedLocation = await AsyncStorage.getItem(element.id);
+          if (cachedLocation != null) {
+            return JSON.parse(cachedLocation)
+          }
           let image = await MediaLibrary.getAssetInfoAsync(element);
           if (image.location != null) {
             await AsyncStorage.setItem(element.id, JSON.stringify(image.location))
@@ -51,6 +52,7 @@ const AnimatedSplashScreen = () => {
     }
 
     const loadLocations = async () => {
+      let lastId : string = ""
       let markersArray : MediaLibrary.Location[] = [];
       let hasMoreData = true;
       try {
@@ -58,8 +60,6 @@ const AnimatedSplashScreen = () => {
         await SplashScreen.hideAsync();
         let timeStart = Date.now();
         let markersSet : Set<MediaLibrary.Location> = new Set();
-
-        await tryGetLocationsFromCache(markersSet);
         const albums = await MediaLibrary.getAlbumsAsync();
         const cameraAlbum = albums.find(p => p.title === "Camera");
         medialibraryRequest.album = cameraAlbum;
@@ -72,7 +72,7 @@ const AnimatedSplashScreen = () => {
           let now = Date.now();
           let delta = now - timeStart;
           if (delta > 9000) {
-            setLoadingText(`We've processed ${markersSet.size} items. There's more work though...`)
+            setLoadingText(`We've processed ${cursor.endCursor} items. There's more work though...`)
           } else if (delta > 5000) {
             setLoadingText("Working on it...")
           } else if (delta > 2000) {
@@ -85,28 +85,10 @@ const AnimatedSplashScreen = () => {
         markersArray = [...markersSet]
         setMarkers(markersArray);
         setMarkersSetEmpty(markersArray.length === 0);
-        await setLocationsToCache(lastId);
       } catch (e) {
         console.log(e)
       } finally {
         setAppReady(!hasMoreData);
-      }
-
-      async function setLocationsToCache(lastId: string) {
-        await AsyncStorage.setItem(cachedLastItemIdKey, lastId);
-        await AsyncStorage.setItem(cachedMarkersKey, JSON.stringify(markersArray));
-      }
-
-      async function tryGetLocationsFromCache(markersSet: Set<MediaLibrary.Location>) {
-        const cachedMarkers = await AsyncStorage.getItem(cachedMarkersKey);
-        const lastItemIdCache = await AsyncStorage.getItem(cachedLastItemIdKey);
-        if (cachedMarkers != null && lastItemIdCache != null && lastItemIdCache !== "") {
-          let parsedMarkers = JSON.parse(cachedMarkers) as MediaLibrary.Location[];
-          if (parsedMarkers != null && parsedMarkers.length !== 0) {
-            parsedMarkers.forEach(markersSet.add, markersSet);
-            medialibraryRequest.after = lastItemIdCache;
-          }
-        }
       }
     }
 

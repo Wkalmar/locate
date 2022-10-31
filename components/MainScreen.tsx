@@ -7,6 +7,8 @@ import * as Sharing from "expo-sharing";
 import { FAB } from 'react-native-paper';
 import { AdMobBanner } from 'expo-ads-admob';
 import CustomTheme from '../CustomTheme';
+import * as MediaLibrary from 'expo-media-library';
+import MainScreenProps from './MainScreenProps';
 
 const MainScreen = ({markers}: MainScreenProps) => {
     let map = useRef<MapView>(null);
@@ -14,7 +16,11 @@ const MainScreen = ({markers}: MainScreenProps) => {
     const [isAdReady, setAdReady] = useState(false);
 
     const fitAllMarkers = () => {
-      map.current?.fitToCoordinates(markers, {
+      const boundingBox = markers
+      if (markers.length === 1) {
+        markers.push({latitude: markers[0].latitude+0.1, longitude: markers[0].longitude+0.1})
+      }
+      map.current?.fitToCoordinates(boundingBox, {
         edgePadding: DEFAULT_PADDING,
         animated: true,
     })};
