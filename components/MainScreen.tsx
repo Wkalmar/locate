@@ -48,7 +48,7 @@ const MainScreen = ({markers}: MainScreenProps) => {
         <MapView ref={map}
           style={styles.map}
           onMapLoaded={fitAllMarkers}>
-          {markers.map((item) => (
+          {markers.map((item : MediaLibrary.Location) => (
             <Marker
               key={Math.random()}
               coordinate={{

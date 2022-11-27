@@ -27,13 +27,20 @@ const AnimatedSplashScreen = () => {
     }, [isAppReady, isTextAnimationIsReady]);
 
     let medialibraryRequest : MediaLibrary.AssetsOptions = {
-      mediaType: ['photo', 'video'],
+
     }
 
     const populateLocationsIntoSet = async (
       cursor : MediaLibrary.PagedInfo<MediaLibrary.Asset>,
       markersSet : Set<MediaLibrary.Location>) => {
+        const allowedTypes : MediaLibrary.MediaTypeValue[] = [
+          MediaLibrary.MediaType.photo,
+          MediaLibrary.MediaType.video
+        ]
         const markersArray = await Promise.all(cursor.assets.map(async element => {
+          if (!allowedTypes.includes(element.mediaType)) {
+            return;
+          }
           let cachedLocation = await AsyncStorage.getItem(element.id);
           if (cachedLocation != null) {
             return JSON.parse(cachedLocation)
@@ -52,7 +59,6 @@ const AnimatedSplashScreen = () => {
     }
 
     const loadLocations = async () => {
-      let lastId : string = ""
       let markersArray : MediaLibrary.Location[] = [];
       let hasMoreData = true;
       try {
@@ -68,7 +74,6 @@ const AnimatedSplashScreen = () => {
           await populateLocationsIntoSet(cursor, markersSet);
           hasMoreData = cursor.hasNextPage;
           medialibraryRequest.after = cursor.endCursor
-          lastId = cursor.endCursor;
           let now = Date.now();
           let delta = now - timeStart;
           if (delta > 9000) {
