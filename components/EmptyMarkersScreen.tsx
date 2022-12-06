@@ -7,7 +7,7 @@ const EmptyMarkersScreen = () => {
         <View style={styles.container}>
             <Text style={styles.text}>
             Locate! could not find any photos that contain geotag. {'\n'}
-            In order to get the result, you should either enable geolocation in your camera settings or start taking photos.
+            You should either enable geolocation in your camera settings or start taking photos.
             </Text>
             <Button
                 icon="close"
