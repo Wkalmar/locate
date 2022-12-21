@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import MapView, { Marker } from 'react-native-maps';
 import {captureRef} from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
 import { FAB } from 'react-native-paper';
-import { AdMobBanner } from 'expo-ads-admob';
 import CustomTheme from '../CustomTheme';
 import * as MediaLibrary from 'expo-media-library';
 import MainScreenProps from './MainScreenProps';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 const MainScreen = ({markers}: MainScreenProps) => {
     let map = useRef<MapView>(null);
@@ -40,11 +39,11 @@ const MainScreen = ({markers}: MainScreenProps) => {
     },[])
 
     return (
-      <View style={styles.container}>
-        {isAdReady && <AdMobBanner
-          bannerSize="smartBannerLandscape"
-          adUnitID="ca-app-pub-3940256099942544/6300978111"
-          servePersonalizedAds/>}
+       <View style={styles.container}>
+          {isAdReady &&
+            <BannerAd
+              unitId=""
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}/>}
         <MapView ref={map}
           style={styles.map}
           onMapLoaded={fitAllMarkers}>

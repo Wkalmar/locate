@@ -2,7 +2,7 @@
   "expo": {
     "name": "Locate!",
     "slug": "Locate",
-    "version": "0.5.0",
+    "version": "0.13.0",
     "orientation": "landscape",
     "icon": "./assets/splash.png",
     "splash": {
@@ -29,9 +29,8 @@
         "backgroundColor": "#FFD874"
       },
       "config": {
-        "googleMobileAdsAppId": "",
         "googleMaps": {
-          "apiKey":""
+          "apiKey": "AIzaSyCvvr5eEoQWVxoymDBPrxsuGACMykMp6eg"
         }
       },
       "permissions": [
@@ -40,7 +39,7 @@
         "android.permission.ACCESS_MEDIA_LOCATION"
       ],
       "package": "com.wkalmar.Locate",
-      "versionCode":5
+      "versionCode": 13
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -52,6 +51,14 @@
           "photosPermission": "Allow Locate! to access your photos."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ecded475-7a73-4e43-8b27-720f573b06cf"
+      }
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": ""
   }
 }

@@ -1,4 +1,5 @@
 import Constants from "expo-constants";
+import mobileAds from "react-native-google-mobile-ads";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Animated, Easing, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
@@ -63,6 +64,7 @@ const AnimatedSplashScreen = () => {
       let hasMoreData = true;
       try {
         let { status } = await MediaLibrary.requestPermissionsAsync();
+        await mobileAds().initialize()
         await SplashScreen.hideAsync();
         let timeStart = Date.now();
         let markersSet : Set<MediaLibrary.Location> = new Set();
